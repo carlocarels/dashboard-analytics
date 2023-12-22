@@ -1,106 +1,46 @@
-import Box from '@mui/joy/Box'
-import Typography from '@mui/joy/Typography'
-import { CompanyName } from '../CompanyName'
-import { AspectRatio, Container, Grid, Sheet, Stack } from '@mui/joy'
+import { LayoutDefault } from '../Layout/LayoutDefault'
+import React, { useEffect, useState } from 'react'
+import { getGA4AnalyticsData } from '../../utils/getGoogleAnalyticsData'
+import { Button, Typography } from '@mui/joy'
+import { googleLogout, useGoogleLogin } from '@react-oauth/google'
+import { GoogleAnalyticsDataApi } from '../GoogleAnalyticsDataApi/GoogleAnalyticsDataApi'
 
-const googleAnalyticsInstances = [
-  { name: 'Instance 1', client_id: 'id_1' },
-  { name: 'Instance 2', client_id: 'id_2' },
-  { name: 'Instance 3', client_id: 'id_3' },
-  { name: 'Instance 4', client_id: 'id_4' },
-  { name: 'Instance 5', client_id: 'id_5' },
-  { name: 'Instance 6', client_id: 'id_6' },
-]
+export default function App() {
+  const [analyticsData, setAnalyticsData] = useState<any>(null)
+  const [userData, setUserData] = useState<any>(null)
+  const [loggedIn, setLoggedIn] = useState(false)
 
-export default function HomePage() {
+  const handleLogin = useGoogleLogin({
+    onSuccess: (tokenResponse) => {
+      setUserData(tokenResponse)
+      setLoggedIn(true)
+    },
+    onError: (error) => {
+      console.error('error: ', error)
+      setLoggedIn(false)
+    },
+  })
+
+  const handleLogout = () => {
+    googleLogout()
+    window.location.reload()
+  }
+
+  console.log('userData', userData)
+
   return (
-    <>
-      <Box
-        sx={(theme) => ({
-          display: 'flex',
-          justifyContent: 'center',
-          backdropFilter: 'blur(12px)',
-          // backgroundColor: 'white',
-          backgroundImage:
-            'linear-gradient(to right, #0f0c29, #302b63, #24243e)',
-          color: 'white',
-        })}
-      >
-        <Container>
-          <Box
-            sx={{
-              display: 'flex',
-              flexDirection: 'column',
-              minHeight: '100dvh',
-              maxWidth: '100%',
-              px: 2,
-            }}
-          >
-            <Box
-              component='header'
-              sx={{
-                py: 3,
-                pb: 4,
-                display: 'flex',
-                alignItems: 'left',
-                justifyContent: 'space-between',
-              }}
-            >
-              <Box sx={{ gap: 2, display: 'flex', alignItems: 'center' }}>
-                <Typography level='title-lg'>
-                  <CompanyName />
-                </Typography>
-              </Box>
-            </Box>
-            <Box
-              component='main'
-              sx={{
-                my: 'auto',
-                display: 'flex',
-                flexDirection: 'column',
-                mx: 'auto',
-              }}
-            >
-              <Typography component='h1' content='Instances' />
-
-              <Grid
-                container
-                direction='row'
-                justifyContent='flex-start'
-                alignItems='flex-start'
-                gap={2}
-              >
-                {googleAnalyticsInstances.map((instance) => {
-                  console.log('test')
-                  return (
-                    <Sheet>
-                      <AspectRatio
-                        variant='outlined'
-                        ratio='4/3'
-                        key={instance.client_id}
-                        sx={{
-                          width: 350,
-                          bgcolor: 'background.level2',
-                          borderRadius: 'md',
-                        }}
-                      >
-                        <Typography level='h2' component='div'>
-                          4/3
-                        </Typography>
-                      </AspectRatio>
-                    </Sheet>
-                  )
-                })}
-              </Grid>
-            </Box>
-            <Box component='footer' sx={{ py: 3 }}>
-              <Typography level='body-xs' textAlign='center'>
-                © {<CompanyName />} {new Date().getFullYear()}
-              </Typography>
-            </Box>
-          </Box>
-        </Container>
-      </Box>
-    </>
+    <LayoutDefault>
+      {loggedIn ? (
+        <>
+          <Typography component='h1'>Welcome!</Typography>
+          <GoogleAnalyticsDataApi userData={userData} />
+          <Button onClick={handleLogout}>Log out</Button>
+        </>
+      ) : (
+        <>
+          <Button onClick={() => handleLogin()}>Login</Button>
+        </>
+      )}
+    </LayoutDefault>
   )
 }
