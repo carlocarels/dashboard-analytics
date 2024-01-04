@@ -16,16 +16,18 @@ interface UserProfile {
 }
 
 export default function App() {
-  const [accessToken, setAccessToken] = useState('')
-  const [profile, setProfile] = useState<UserProfile | null>(null)
+  const [accessToken, setAccessToken] = useState<string>(
+    localStorage.getItem('accessToken') || ''
+  )
+  const [profile, setProfile] = useState<UserProfile | null>(
+    JSON.parse(localStorage.getItem('userProfile') || 'null')
+  )
 
   const login = useGoogleLogin({
     onSuccess: (codeResponse: TokenResponse) => {
-      // Assuming TokenResponse structure, modify this based on actual response structure
-      console.log('response:', codeResponse)
       const { access_token } = codeResponse
-      console.log(access_token)
       setAccessToken(access_token)
+      localStorage.setItem('accessToken', access_token)
     },
     onError: (error) => console.log('Login Failed:', error),
   })
@@ -52,6 +54,7 @@ export default function App() {
 
           const data: UserProfile = await response.json()
           setProfile(data)
+          localStorage.setItem('userProfile', JSON.stringify(data))
         } catch (error) {
           console.error(error)
         }
@@ -64,6 +67,8 @@ export default function App() {
   const logOut = () => {
     googleLogout()
     setProfile(null)
+    localStorage.removeItem('accessToken')
+    localStorage.removeItem('userProfile')
   }
 
   return (
@@ -83,7 +88,7 @@ export default function App() {
             <Button onClick={logOut}>Log out</Button>
           </div>
         ) : (
-          <Button onClick={() => login()}>Login</Button>
+          <Button onClick={() => login()}>Sign In </Button>
         )}
       </div>
     </LayoutDefault>
