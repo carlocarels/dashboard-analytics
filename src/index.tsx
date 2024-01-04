@@ -6,12 +6,13 @@ import { CssVarsProvider } from '@mui/joy'
 import { GoogleOAuthProvider } from '@react-oauth/google'
 
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement)
+
 root.render(
-  <React.StrictMode>
-    <CssVarsProvider defaultMode='dark' disableTransitionOnChange>
-      <GoogleOAuthProvider clientId={process.env.REACT_APP_CLIENT_ID ?? ''}>
+  <GoogleOAuthProvider clientId='956548017074-qme62qg7ral0chbvvjh2ft8k5enphot0.apps.googleusercontent.com'>
+    <React.StrictMode>
+      <CssVarsProvider defaultMode='dark' disableTransitionOnChange>
         <App />
-      </GoogleOAuthProvider>
-    </CssVarsProvider>
-  </React.StrictMode>
+      </CssVarsProvider>
+    </React.StrictMode>
+  </GoogleOAuthProvider>
 )
