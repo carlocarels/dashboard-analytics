@@ -1,46 +1,91 @@
-import { LayoutDefault } from '../Layout/LayoutDefault'
 import React, { useEffect, useState } from 'react'
-import { getGA4AnalyticsData } from '../../utils/getGoogleAnalyticsData'
+import { LayoutDefault } from '../Layout/LayoutDefault'
 import { Button, Typography } from '@mui/joy'
-import { googleLogout, useGoogleLogin } from '@react-oauth/google'
+import {
+  googleLogout,
+  useGoogleLogin,
+  TokenResponse,
+} from '@react-oauth/google'
 import { GoogleAnalyticsDataApi } from '../GoogleAnalyticsDataApi/GoogleAnalyticsDataApi'
 
-export default function App() {
-  const [analyticsData, setAnalyticsData] = useState<any>(null)
-  const [userData, setUserData] = useState<any>(null)
-  const [loggedIn, setLoggedIn] = useState(false)
+interface UserProfile {
+  access_token: string
+  picture: string
+  name: string
+  email: string
+}
 
-  const handleLogin = useGoogleLogin({
-    onSuccess: (tokenResponse) => {
-      setUserData(tokenResponse)
-      setLoggedIn(true)
+export default function App() {
+  const [accessToken, setAccessToken] = useState('')
+  const [profile, setProfile] = useState<UserProfile | null>(null)
+
+  const login = useGoogleLogin({
+    onSuccess: (codeResponse: TokenResponse) => {
+      // Assuming TokenResponse structure, modify this based on actual response structure
+      console.log('response:', codeResponse)
+      const { access_token } = codeResponse
+      console.log(access_token)
+      setAccessToken(access_token)
     },
-    onError: (error) => {
-      console.error('error: ', error)
-      setLoggedIn(false)
-    },
+    onError: (error) => console.log('Login Failed:', error),
   })
 
-  const handleLogout = () => {
-    googleLogout()
-    window.location.reload()
-  }
+  useEffect(() => {
+    const fetchUserProfile = async () => {
+      if (accessToken) {
+        try {
+          const response = await fetch(
+            `https://www.googleapis.com/oauth2/v1/userinfo?access_token=${accessToken}`,
+            {
+              headers: {
+                Authorization: `Bearer ${accessToken}`,
+                Accept: 'application/json',
+              },
+            }
+          )
 
-  console.log('userData', userData)
+          if (!response.ok) {
+            throw new Error(
+              `Failed to fetch user profile: ${response.status} ${response.statusText}`
+            )
+          }
+
+          const data: UserProfile = await response.json()
+          setProfile(data)
+        } catch (error) {
+          console.error(error)
+        }
+      }
+    }
+
+    fetchUserProfile()
+  }, [accessToken])
+
+  const logOut = () => {
+    googleLogout()
+    setProfile(null)
+  }
 
   return (
     <LayoutDefault>
-      {loggedIn ? (
-        <>
-          <Typography component='h1'>Welcome!</Typography>
-          <GoogleAnalyticsDataApi userData={userData} />
-          <Button onClick={handleLogout}>Log out</Button>
-        </>
-      ) : (
-        <>
-          <Button onClick={() => handleLogin()}>Login</Button>
-        </>
-      )}
+      <div>
+        <h2>React Google Login</h2>
+        <br />
+        <br />
+        {profile ? (
+          <div>
+            <img src={profile.picture} alt='user' />
+            <h3>User Logged in</h3>
+            <p>Name: {profile.name}</p>
+            <p>Email Address: {profile.email}</p>
+            <br />
+            <br />
+            <Button onClick={logOut}>Log out</Button>
+          </div>
+        ) : (
+          <Button onClick={() => login()}>Login</Button>
+        )}
+      </div>
     </LayoutDefault>
   )
 }
