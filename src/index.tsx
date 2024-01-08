@@ -4,11 +4,12 @@ import './index.css'
 import App from './components/App/App'
 import { CssVarsProvider } from '@mui/joy'
 import { GoogleOAuthProvider } from '@react-oauth/google'
+import { oAuthConfig } from './utils/oauth-config'
 
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement)
 
 root.render(
-  <GoogleOAuthProvider clientId='956548017074-qme62qg7ral0chbvvjh2ft8k5enphot0.apps.googleusercontent.com'>
+  <GoogleOAuthProvider clientId={oAuthConfig.clientId}>
     <React.StrictMode>
       <CssVarsProvider defaultMode='dark' disableTransitionOnChange>
         <App />
