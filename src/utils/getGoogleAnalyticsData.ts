@@ -1,4 +1,4 @@
-export const getGA4AnalyticsData = async (
+export const getGoogleAnalyticsData = async (
   propertyId: string,
   accessToken: string
 ): Promise<any> => {
@@ -6,9 +6,6 @@ export const getGA4AnalyticsData = async (
   const endpoint = `https://analyticsdata.googleapis.com/${apiVersion}/properties/${propertyId}:runReport`
 
   const requestBody = {
-    entity: {
-      propertyId,
-    },
     dateRanges: [
       {
         startDate: '7daysAgo',
