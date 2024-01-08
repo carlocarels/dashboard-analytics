@@ -81,9 +81,6 @@ export default function App() {
   return (
     <LayoutDefault>
       <div>
-        <h2>React Google Login</h2>
-        <br />
-        <br />
         {profile ? (
           <div>
             <img src={profile.picture} alt='user' />
