@@ -3,25 +3,11 @@ export const getGoogleAnalyticsData = async (
   accessToken: string
 ): Promise<any> => {
   const apiVersion = 'v1beta'
-  const endpoint = `https://analyticsdata.googleapis.com/${apiVersion}/properties/${propertyId}:runReport`
+  const endpoint = `https://analyticsdata.googleapis.com/${apiVersion}/properties/${propertyId}:runRealtimeReport`
 
   const requestBody = {
-    dateRanges: [
-      {
-        startDate: '7daysAgo',
-        endDate: 'today',
-      },
-    ],
-    dimensions: [
-      {
-        name: 'date',
-      },
-    ],
-    metrics: [
-      {
-        name: 'sessions',
-      },
-    ],
+    dimensions: [{ name: 'country' }],
+    metrics: [{ name: 'activeUsers' }],
   }
 
   try {

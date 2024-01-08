@@ -4,7 +4,7 @@ import {
   googleLogout,
   useGoogleLogin,
 } from '@react-oauth/google'
-import { Suspense, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { LayoutDefault } from '../Layout/LayoutDefault'
 import { GoogleAnalyticsDataApi } from '../GoogleAnalyticsDataApi/GoogleAnalyticsDataApi'
 
@@ -36,12 +36,12 @@ export default function App() {
     },
     onError: (error) => console.log('Login Failed:', error),
     scope: 'https://www.googleapis.com/auth/analytics.readonly',
-    prompt: 'consent'
+    prompt: 'consent',
   })
 
   useEffect(() => {
-    const fetchUserProfile = async () => {
-      if (accessToken) {
+    if (!profile && accessToken) {
+      const fetchUserProfile = async () => {
         try {
           const response = await fetch(
             `https://www.googleapis.com/oauth2/v1/userinfo?access_token=${accessToken}`,
@@ -66,14 +66,15 @@ export default function App() {
           console.error(error)
         }
       }
+      fetchUserProfile()
     }
-
-    fetchUserProfile()
-  }, [accessToken])
+    console.log('profile', profile)
+  }, [accessToken, profile])
 
   const logOut = () => {
     googleLogout()
     setProfile(null)
+    setAccessToken('')
     localStorage.removeItem('accessToken')
     localStorage.removeItem('userProfile')
   }
@@ -83,12 +84,14 @@ export default function App() {
       <div>
         {profile ? (
           <div>
-            <img src={profile.picture} alt='user' />
-            <h3>User Logged in</h3>
-            <p>Name: {profile.name}</p>
-            <p>Email Address: {profile.email}</p>
+            <p>Naam: {profile.family_name}</p>
+            <p>E-mailadres: {profile.email}</p>
             <br />
             <br />
+            {accessToken !== '' && (
+              <GoogleAnalyticsDataApi token={accessToken} />
+            )}
+
             <Button onClick={logOut}>Log out</Button>
           </div>
         ) : (

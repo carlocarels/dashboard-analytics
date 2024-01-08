@@ -1,31 +1,40 @@
 import { useEffect, useState } from 'react'
-import { getGA4AnalyticsData } from '../../utils/getGoogleAnalyticsData'
+import { getGoogleAnalyticsData } from '../../utils/getGoogleAnalyticsData'
+import { UserProfile } from '../App/App'
+import { oAuthConfig } from '../../utils/oauth-config'
+import { Box } from '@mui/joy'
 
 type GoogleAnalyticsDataApiProps = {
-  userData: object
+  token: UserProfile['access_token']
 }
 
-export function GoogleAnalyticsDataApi(props: GoogleAnalyticsDataApiProps) {
-  const { userData } = props
+export const GoogleAnalyticsDataApi = (props: GoogleAnalyticsDataApiProps) => {
+  const { token } = props
   const [analyticsData, setAnalyticsData] = useState<any>(null)
 
   useEffect(() => {
-    const propertyId = process.env.REACT_APP_GA4_PROPERTY_ID ?? ''
-    const accessToken = process.env.REACT_APP_ACCESS_TOKEN ?? ''
+    const propertyId = oAuthConfig.propertyId
+
+    if (!propertyId) return
 
     const fetchData = async () => {
       try {
-        const data = await getGA4AnalyticsData(accessToken, propertyId)
+        const data = await getGoogleAnalyticsData(propertyId, token)
         setAnalyticsData(data)
+        console.log('trying...')
       } catch (error) {
         console.error('Error fetching Google Analytics data:', error)
       }
     }
 
-    console.log('analyticsData', analyticsData)
+    if (analyticsData) {
+      console.log('analyticsData', analyticsData)
+    }
 
-    fetchData()
-  }, [])
+    if (!analyticsData) {
+      fetchData()
+    }
+  }, [analyticsData, token])
 
-  return <>GoogleAnalyticsDataApi HERE!</>
+  return <Box>GoogleAnalyticsDataApi HERE!</Box>
 }

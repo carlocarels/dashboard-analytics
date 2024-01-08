@@ -11,7 +11,9 @@ export function LayoutDefault(props: LayoutDefaultProps) {
   return (
     <Box
       sx={{
-        backgroundImage: 'linear-gradient(to right, #0f0c29, #302b63, #24243e)',
+        // backgroundImage: 'linear-gradient(to right, #0f0c29, #302b63, #24243e)',
+        color: '#15252d',
+        backgroundCOlor: '#d0d7d6',
       }}
     >
       <Container>
