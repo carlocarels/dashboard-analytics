@@ -35,6 +35,8 @@ export default function App() {
       localStorage.setItem('accessToken', access_token)
     },
     onError: (error) => console.log('Login Failed:', error),
+    scope: 'https://www.googleapis.com/auth/analytics.readonly',
+    prompt: 'consent'
   })
 
   useEffect(() => {
