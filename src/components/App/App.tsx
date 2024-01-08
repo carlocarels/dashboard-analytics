@@ -1,18 +1,23 @@
-import React, { useEffect, useState } from 'react'
-import { LayoutDefault } from '../Layout/LayoutDefault'
-import { Button, Typography } from '@mui/joy'
+import { Button } from '@mui/joy'
 import {
+  TokenResponse,
   googleLogout,
   useGoogleLogin,
-  TokenResponse,
 } from '@react-oauth/google'
+import { Suspense, useEffect, useState } from 'react'
+import { LayoutDefault } from '../Layout/LayoutDefault'
 import { GoogleAnalyticsDataApi } from '../GoogleAnalyticsDataApi/GoogleAnalyticsDataApi'
 
-interface UserProfile {
+export type UserProfile = {
   access_token: string
-  picture: string
+  id: string
   name: string
+  family_name: string
+  given_name: string
   email: string
+  verified_email: boolean
+  picture: string
+  locale: string
 }
 
 export default function App() {
